@@ -1,0 +1,17 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-semibold text-brand-800">Mis publicaciones</h1>
+  <a href="/items/new" class="btn-accent">+ Nueva publicación</a>
+</div>
+
+<% if (items.length === 0) { %>
+  <div class="card p-10 text-center text-slate-500">
+    Todavía no tienes publicaciones.
+    <a href="/items/new" class="text-brand-700 hover:underline">Crea la primera</a>.
+  </div>
+<% } else { %>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <% items.forEach(function(item) { %>
+      <%- include('../partials/item-card', { item }) %>
+    <% }) %>
+  </div>
+<% } %>

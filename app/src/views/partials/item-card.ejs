@@ -1,0 +1,31 @@
+<a href="/items/<%= item.id %>" class="card overflow-hidden flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all duration-150">
+  <div class="h-44 bg-brand-50 flex items-center justify-center overflow-hidden">
+    <% if (item.cover_image) { %>
+      <img src="/uploads/<%= item.cover_image %>" alt="<%= item.title %>" class="w-full h-full object-cover" />
+    <% } else { %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-brand-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16l5-5a2 2 0 012.8 0l5.2 5.2M14 13l1.7-1.7a2 2 0 012.8 0L21 13M4 19h16a1 1 0 001-1V6a1 1 0 00-1-1H4a1 1 0 00-1 1v12a1 1 0 001 1z" />
+      </svg>
+    <% } %>
+  </div>
+  <div class="p-4 flex flex-col gap-2 flex-1">
+    <div class="flex items-center gap-2">
+      <% if (item.status === 'recuperado') { %>
+        <span class="badge-resolved">Recuperado</span>
+      <% } else if (item.type === 'perdido') { %>
+        <span class="badge-lost">Perdido</span>
+      <% } else { %>
+        <span class="badge-found">Encontrado</span>
+      <% } %>
+      <% if (item.category_name) { %>
+        <span class="text-xs text-slate-500"><%= item.category_name %></span>
+      <% } %>
+    </div>
+    <h3 class="font-semibold text-brand-800 leading-snug line-clamp-2"><%= item.title %></h3>
+    <p class="text-sm text-slate-500 line-clamp-2"><%= item.description %></p>
+    <div class="mt-auto flex items-center justify-between text-xs text-slate-400 pt-2">
+      <span>📍 <%= item.location %></span>
+      <span><%= new Date(item.item_date).toLocaleDateString('es-ES') %></span>
+    </div>
+  </div>
+</a>

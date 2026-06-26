@@ -1,0 +1,110 @@
+<%
+function toDateInput(d) {
+  if (!d) return '';
+  const date = new Date(d);
+  return date.toISOString().slice(0, 10);
+}
+%>
+
+<div class="max-w-2xl mx-auto card p-8">
+  <h1 class="text-2xl font-bold text-brand-800 mb-1"><%= isEdit ? 'Editar publicación' : 'Publicar objeto' %></h1>
+  <p class="text-slate-500 text-sm mb-6">Completa los datos para que otras personas puedan encontrar tu publicación.</p>
+
+  <% if (typeof errors !== 'undefined' && errors.length) { %>
+    <div class="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm">
+      <ul class="list-disc list-inside">
+        <% errors.forEach(function(e) { %><li><%= e %></li><% }) %>
+      </ul>
+    </div>
+  <% } %>
+
+  <form action="<%= formAction %>" method="POST" enctype="multipart/form-data" class="space-y-4">
+    <div>
+      <label class="label-field">¿Qué pasó con el objeto?</label>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="card p-3 flex items-center gap-2 cursor-pointer hover:bg-brand-50/60">
+          <input type="radio" name="type" value="perdido" class="accent-brand-600" <%= item.type === 'perdido' || !item.type ? 'checked' : '' %> />
+          <span>Lo perdí</span>
+        </label>
+        <label class="card p-3 flex items-center gap-2 cursor-pointer hover:bg-brand-50/60">
+          <input type="radio" name="type" value="encontrado" class="accent-brand-600" <%= item.type === 'encontrado' ? 'checked' : '' %> />
+          <span>Lo encontré</span>
+        </label>
+      </div>
+    </div>
+
+    <div>
+      <label class="label-field">Título</label>
+      <input type="text" name="title" required value="<%= item.title || '' %>" class="input-field" placeholder="Ej. Billetera de cuero negra" />
+    </div>
+
+    <div>
+      <label class="label-field">Categoría</label>
+      <select name="category_id" class="input-field">
+        <option value="">Selecciona una categoría</option>
+        <% categories.forEach(function(c) { %>
+          <option value="<%= c.id %>" <%= String(item.category_id) === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div>
+      <label class="label-field">Descripción</label>
+      <textarea name="description" required rows="4" class="input-field" placeholder="Describe el objeto, marca, color, detalles relevantes..."><%= item.description || '' %></textarea>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="label-field">Ubicación</label>
+        <input type="text" name="location" required value="<%= item.location || '' %>" class="input-field" placeholder="Ej. Parque Central" />
+      </div>
+      <div>
+        <label class="label-field">Fecha</label>
+        <input type="date" name="item_date" required value="<%= toDateInput(item.item_date) %>" class="input-field" />
+      </div>
+    </div>
+
+    <hr class="border-slate-200" />
+
+    <p class="text-sm font-medium text-slate-700">Datos de contacto</p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div>
+        <label class="label-field">Nombre</label>
+        <input type="text" name="contact_name" value="<%= item.contact_name || '' %>" class="input-field" />
+      </div>
+      <div>
+        <label class="label-field">Teléfono</label>
+        <input type="tel" name="contact_phone" value="<%= item.contact_phone || '' %>" class="input-field" />
+      </div>
+      <div>
+        <label class="label-field">Correo</label>
+        <input type="email" name="contact_email" value="<%= item.contact_email || '' %>" class="input-field" />
+      </div>
+    </div>
+
+    <% if (isEdit && typeof images !== 'undefined' && images.length) { %>
+      <div>
+        <label class="label-field">Fotos actuales</label>
+        <div class="grid grid-cols-4 gap-2">
+          <% images.forEach(function(img) { %>
+            <div class="relative group">
+              <img src="/uploads/<%= img.filename %>" class="w-full h-20 object-cover rounded-lg" />
+              <form action="/items/<%= item.id %>/images/<%= img.id %>?_method=DELETE" method="POST"
+                    onsubmit="return confirm('¿Eliminar esta foto?');"
+                    class="absolute top-1 right-1">
+                <button type="submit" class="bg-red-600 text-white rounded-full w-5 h-5 text-xs leading-none">×</button>
+              </form>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <div>
+      <label class="label-field">Agregar fotos (máx. 4, 5MB cada una)</label>
+      <input type="file" name="images" accept="image/*" multiple class="input-field" />
+    </div>
+
+    <button type="submit" class="btn-primary w-full"><%= isEdit ? 'Guardar cambios' : 'Publicar' %></button>
+  </form>
+</div>

@@ -1,0 +1,34 @@
+{
+  "name": "objetos-perdidos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistema de objetos perdidos y encontrados",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "concurrently \"npx tailwindcss -i ./src/public/css/input.css -o ./src/public/css/output.css --watch\" \"nodemon src/app.js\"",
+    "build:css": "npx tailwindcss -i ./src/public/css/input.css -o ./src/public/css/output.css --minify"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "connect-flash": "^0.1.1",
+    "connect-pg-simple": "^9.0.1",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.18.0",
+    "express-validator": "^7.1.0",
+    "method-override": "^3.0.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.4",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10"
+  }
+}

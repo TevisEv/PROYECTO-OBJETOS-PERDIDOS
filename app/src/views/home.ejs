@@ -1,0 +1,43 @@
+<section class="relative -mx-4 -mt-6 mb-10 overflow-hidden rounded-b-[2.5rem] bg-gradient-to-br from-brand-400 via-brand-500 to-accent-400 px-4 py-12 sm:py-14 text-center text-white">
+  <div class="relative max-w-2xl mx-auto">
+    <span class="inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-medium tracking-wide mb-4">
+      Sin cuenta para buscar · Cuenta solo para publicar
+    </span>
+    <h1 class="text-2xl sm:text-3xl font-semibold mb-3 leading-tight">¿Perdiste algo? ¿Encontraste algo?</h1>
+    <p class="text-brand-50/90 text-sm sm:text-base mb-7">
+      Conectamos a quienes pierden objetos con quienes los encuentran. Buscar es libre y gratuito, sin necesidad de cuenta.
+    </p>
+    <form action="/items" method="GET" class="flex flex-col sm:flex-row gap-2 max-w-lg mx-auto">
+      <input type="text" name="q" placeholder="Buscar por palabra clave (ej. llaves, billetera, gato...)"
+             class="flex-1 rounded-full px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/60" />
+      <button type="submit" class="rounded-full bg-white text-brand-700 font-medium px-5 py-2.5 text-sm hover:bg-brand-50 transition-colors">Buscar</button>
+    </form>
+    <div class="mt-5 flex flex-wrap justify-center gap-2">
+      <a href="/items?type=perdido" class="rounded-full bg-white/15 hover:bg-white/25 transition-colors px-4 py-1.5 text-sm">Ver perdidos</a>
+      <a href="/items?type=encontrado" class="rounded-full bg-white/15 hover:bg-white/25 transition-colors px-4 py-1.5 text-sm">Ver encontrados</a>
+    </div>
+  </div>
+</section>
+
+<section class="mb-10">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold text-brand-800">Publicaciones recientes</h2>
+    <a href="/items" class="text-sm text-brand-600 hover:underline">Ver todas →</a>
+  </div>
+
+  <% if (items.length === 0) { %>
+    <div class="card p-8 text-center text-slate-400 text-sm">Todavía no hay publicaciones activas.</div>
+  <% } else { %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <% items.forEach(function(item) { %>
+        <%- include('partials/item-card', { item }) %>
+      <% }) %>
+    </div>
+  <% } %>
+</section>
+
+<section class="card p-7 text-center bg-gradient-to-br from-brand-50 to-white border-brand-100">
+  <h2 class="text-lg font-semibold text-brand-800 mb-1.5">¿Tienes una cuenta?</h2>
+  <p class="text-slate-500 text-sm mb-4">Crea una cuenta gratuita para publicar objetos perdidos o encontrados y gestionar tus publicaciones.</p>
+  <a href="/auth/register" class="btn-primary">Crear cuenta gratis</a>
+</section>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> · Objetos Perdidos</title>
+  <link rel="stylesheet" href="/css/output.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body class="min-h-screen bg-brand-50/60 text-slate-800 flex flex-col font-sans">
+  <%- include('../partials/navbar') %>
+
+  <main class="flex-1">
+    <div class="max-w-6xl mx-auto px-4 py-6">
+      <%- include('../partials/flash') %>
+      <%- body %>
+    </div>
+  </main>
+
+  <footer class="bg-brand-950 text-brand-100 mt-10">
+    <div class="max-w-6xl mx-auto px-4 py-6 text-sm text-center">
+      <p>&copy; <%= new Date().getFullYear() %> Objetos Perdidos. Reuniendo cosas con sus dueños.</p>
+    </div>
+  </footer>
+</body>
+</html>

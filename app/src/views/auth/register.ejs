@@ -1,0 +1,40 @@
+<div class="max-w-md mx-auto card p-8 mt-6">
+  <h1 class="text-2xl font-bold text-brand-800 mb-1">Crear cuenta</h1>
+  <p class="text-slate-500 text-sm mb-6">Necesitas una cuenta para publicar objetos perdidos o encontrados.</p>
+
+  <% if (typeof errors !== 'undefined' && errors.length) { %>
+    <div class="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm">
+      <ul class="list-disc list-inside">
+        <% errors.forEach(function(e) { %><li><%= e %></li><% }) %>
+      </ul>
+    </div>
+  <% } %>
+
+  <form action="/auth/register" method="POST" class="space-y-4">
+    <div>
+      <label class="label-field">Nombre completo</label>
+      <input type="text" name="name" required value="<%= values.name || '' %>" class="input-field" />
+    </div>
+    <div>
+      <label class="label-field">Correo electrónico</label>
+      <input type="email" name="email" required value="<%= values.email || '' %>" class="input-field" />
+    </div>
+    <div>
+      <label class="label-field">Teléfono (opcional)</label>
+      <input type="tel" name="phone" value="<%= values.phone || '' %>" class="input-field" />
+    </div>
+    <div>
+      <label class="label-field">Contraseña</label>
+      <input type="password" name="password" required minlength="6" class="input-field" />
+    </div>
+    <div>
+      <label class="label-field">Confirmar contraseña</label>
+      <input type="password" name="confirm_password" required minlength="6" class="input-field" />
+    </div>
+    <button type="submit" class="btn-primary w-full">Crear cuenta</button>
+  </form>
+
+  <p class="text-sm text-slate-500 mt-5 text-center">
+    ¿Ya tienes cuenta? <a href="/auth/login" class="text-brand-700 font-medium hover:underline">Inicia sesión</a>
+  </p>
+</div>

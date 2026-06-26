@@ -1,0 +1,28 @@
+<div class="max-w-md mx-auto card p-8 mt-6">
+  <h1 class="text-2xl font-bold text-brand-800 mb-1">Iniciar sesión</h1>
+  <p class="text-slate-500 text-sm mb-6">Accede para publicar y gestionar tus objetos.</p>
+
+  <% if (typeof errors !== 'undefined' && errors.length) { %>
+    <div class="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm">
+      <ul class="list-disc list-inside">
+        <% errors.forEach(function(e) { %><li><%= e %></li><% }) %>
+      </ul>
+    </div>
+  <% } %>
+
+  <form action="/auth/login" method="POST" class="space-y-4">
+    <div>
+      <label class="label-field">Correo electrónico</label>
+      <input type="email" name="email" required value="<%= values.email || '' %>" class="input-field" />
+    </div>
+    <div>
+      <label class="label-field">Contraseña</label>
+      <input type="password" name="password" required class="input-field" />
+    </div>
+    <button type="submit" class="btn-primary w-full">Iniciar sesión</button>
+  </form>
+
+  <p class="text-sm text-slate-500 mt-5 text-center">
+    ¿No tienes cuenta? <a href="/auth/register" class="text-brand-700 font-medium hover:underline">Regístrate</a>
+  </p>
+</div>
