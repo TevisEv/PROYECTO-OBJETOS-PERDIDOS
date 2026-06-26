@@ -30,6 +30,7 @@ Sistema web para publicar y buscar objetos perdidos/encontrados. Cualquier perso
    - `POSTGRES_PASSWORD`
    - `SESSION_SECRET`
    - `DATABASE_URL` (debe usar el mismo usuario/clave/db que definiste arriba)
+   - `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM_EMAIL` (credenciales de Brevo, usadas para enviar el código de verificación de cuenta)
 
 3. Levanta los contenedores:
    ```bash
@@ -45,6 +46,7 @@ Sistema web para publicar y buscar objetos perdidos/encontrados. Cualquier perso
 3. Clona el repo y crea el `.env` como se indica arriba (este archivo **no** se sube a git, debe crearse manualmente en cada entorno).
 4. Ejecuta `docker compose up -d --build`.
 5. Las imágenes subidas y los datos de Postgres persisten en volúmenes Docker (`uploads_data`, `pgdata`), por lo que sobreviven a reinicios y actualizaciones del contenedor.
+6. **Importante (Brevo):** la primera vez que el servidor intente enviar un correo de verificación desde la IP de EC2, Brevo puede rechazarlo con `Unauthorized IP address`. Entra a Brevo > Seguridad > Direcciones IP y autoriza la IP pública de la instancia (puede tardar 1-2 minutos en propagarse).
 
 ## Estructura del proyecto
 
