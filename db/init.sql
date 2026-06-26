@@ -4,10 +4,13 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(120) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     email VARCHAR(160) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    phone VARCHAR(40),
+    phone VARCHAR(9),
+    email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    verification_code VARCHAR(10),
+    verification_expires TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -27,8 +30,8 @@ CREATE TABLE IF NOT EXISTS items (
     description TEXT NOT NULL,
     location VARCHAR(160) NOT NULL,
     item_date DATE NOT NULL,
-    contact_name VARCHAR(120),
-    contact_phone VARCHAR(40),
+    contact_name VARCHAR(100),
+    contact_phone VARCHAR(9),
     contact_email VARCHAR(160),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()

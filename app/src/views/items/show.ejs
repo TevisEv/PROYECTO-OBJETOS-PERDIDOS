@@ -3,11 +3,21 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
   <div class="lg:col-span-2 card overflow-hidden">
     <% if (images.length) { %>
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-1 bg-brand-50">
-        <% images.forEach(function(img, idx) { %>
-          <img src="/uploads/<%= img.filename %>" alt="Foto <%= idx + 1 %>" class="w-full h-48 object-cover <%= idx === 0 ? 'col-span-2 sm:col-span-3 h-72' : '' %>" />
-        <% }) %>
+      <div class="bg-brand-50">
+        <img id="main-photo" src="/uploads/<%= images[0].filename %>" alt="<%= item.title %>"
+             class="w-full h-[28rem] object-cover" />
       </div>
+      <% if (images.length > 1) { %>
+        <div class="grid grid-cols-4 gap-1 p-2 bg-white">
+          <% images.forEach(function(img, idx) { %>
+            <button type="button" onclick="document.getElementById('main-photo').src = '/uploads/<%= img.filename %>'"
+                    class="block">
+              <img src="/uploads/<%= img.filename %>" alt="Foto <%= idx + 1 %>"
+                   class="w-full h-20 object-cover rounded-lg border-2 <%= idx === 0 ? 'border-brand-400' : 'border-transparent' %> hover:border-brand-300" />
+            </button>
+          <% }) %>
+        </div>
+      <% } %>
     <% } else { %>
       <div class="h-60 bg-brand-50 flex items-center justify-center text-brand-200">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -63,6 +73,12 @@
           <li class="text-slate-700"><strong><%= item.contact_name || item.owner_name %></strong></li>
           <% if (item.contact_phone) { %>
             <li><a href="tel:<%= item.contact_phone %>" class="text-brand-700 hover:underline">📞 <%= item.contact_phone %></a></li>
+            <li>
+              <a href="https://wa.me/+51<%= item.contact_phone %>" target="_blank" rel="noopener noreferrer"
+                 class="btn-accent w-full">
+                💬 Contactar por WhatsApp
+              </a>
+            </li>
           <% } %>
           <% if (item.contact_email) { %>
             <li><a href="mailto:<%= item.contact_email %>" class="text-brand-700 hover:underline">✉️ <%= item.contact_email %></a></li>

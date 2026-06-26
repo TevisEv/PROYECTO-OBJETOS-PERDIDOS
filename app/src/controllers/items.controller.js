@@ -1,7 +1,7 @@
-const fs = require("fs");
-const path = require("path");
 const pool = require("../config/db");
-const { UPLOAD_DIR } = require("../middleware/upload");
+const { saveProcessedImages, deleteImageFile } = require("../middleware/upload");
+const { todayLima, isFutureLima } = require("../utils/peru-time");
+const { PERU_PHONE_RE, NAME_MAX } = require("../utils/validators");
 
 const PAGE_SIZE = 9;
 
@@ -134,20 +134,39 @@ async function newForm(req, res) {
     categories,
     item: {},
     formAction: "/items",
-    isEdit: false
+    isEdit: false,
+    maxDate: todayLima()
   });
 }
 
-async function create(req, res) {
-  const { type, title, description, location, item_date, category_id, contact_name, contact_phone, contact_email } = req.body;
+function validateItemInput(body) {
+  const { type, title, description, location, item_date, contact_phone, contact_email, contact_name } = body;
   const errors = [];
 
   if (!["perdido", "encontrado"].includes(type)) errors.push("Selecciona si el objeto se perdió o se encontró.");
   if (!title || title.trim().length < 3) errors.push("El título debe tener al menos 3 caracteres.");
+  if (title && title.trim().length > 150) errors.push("El título no puede superar los 150 caracteres.");
   if (!description || description.trim().length < 10) errors.push("La descripción debe tener al menos 10 caracteres.");
   if (!location) errors.push("La ubicación es obligatoria.");
-  if (!item_date) errors.push("La fecha es obligatoria.");
+  if (!item_date) {
+    errors.push("La fecha es obligatoria.");
+  } else if (isFutureLima(item_date)) {
+    errors.push("La fecha no puede ser futura.");
+  }
+  if (contact_name && contact_name.trim().length > NAME_MAX) {
+    errors.push(`El nombre de contacto no puede superar los ${NAME_MAX} caracteres.`);
+  }
+  if (contact_phone && !PERU_PHONE_RE.test(contact_phone)) {
+    errors.push("El teléfono de contacto debe tener exactamente 9 dígitos numéricos.");
+  }
   if (!contact_phone && !contact_email) errors.push("Indica al menos un medio de contacto (teléfono o correo).");
+
+  return errors;
+}
+
+async function create(req, res) {
+  const { type, title, description, location, item_date, category_id, contact_name, contact_phone, contact_email } = req.body;
+  const errors = validateItemInput(req.body);
 
   if (errors.length) {
     const categories = await getCategories();
@@ -157,7 +176,8 @@ async function create(req, res) {
       errors,
       item: req.body,
       formAction: "/items",
-      isEdit: false
+      isEdit: false,
+      maxDate: todayLima()
     });
   }
 
@@ -180,9 +200,10 @@ async function create(req, res) {
     );
 
     const itemId = result.rows[0].id;
+    const filenames = await saveProcessedImages(req.files);
 
-    if (req.files && req.files.length) {
-      const values = req.files.map((f) => `(${itemId}, '${f.filename}')`).join(",");
+    if (filenames.length) {
+      const values = filenames.map((name) => `(${itemId}, '${name}')`).join(",");
       await pool.query(`INSERT INTO item_images (item_id, filename) VALUES ${values}`);
     }
 
@@ -197,7 +218,8 @@ async function create(req, res) {
       errors: ["Ocurrió un error al guardar la publicación."],
       item: req.body,
       formAction: "/items",
-      isEdit: false
+      isEdit: false,
+      maxDate: todayLima()
     });
   }
 }
@@ -225,7 +247,8 @@ async function editForm(req, res) {
     item,
     images: imagesResult.rows,
     formAction: `/items/${id}?_method=PUT`,
-    isEdit: true
+    isEdit: true,
+    maxDate: todayLima()
   });
 }
 
@@ -243,6 +266,22 @@ async function update(req, res) {
       return res.redirect("/dashboard");
     }
 
+    const errors = validateItemInput(req.body);
+    if (errors.length) {
+      const categories = await getCategories();
+      const imagesResult = await pool.query("SELECT * FROM item_images WHERE item_id = $1", [id]);
+      return res.status(400).render("items/form", {
+        title: "Editar publicación",
+        categories,
+        errors,
+        item: { ...item, ...req.body, id },
+        images: imagesResult.rows,
+        formAction: `/items/${id}?_method=PUT`,
+        isEdit: true,
+        maxDate: todayLima()
+      });
+    }
+
     await pool.query(
       `UPDATE items SET category_id = $1, type = $2, title = $3, description = $4, location = $5,
        item_date = $6, contact_name = $7, contact_phone = $8, contact_email = $9, updated_at = NOW()
@@ -250,8 +289,9 @@ async function update(req, res) {
       [category_id || null, type, title.trim(), description.trim(), location.trim(), item_date, contact_name, contact_phone || null, contact_email || null, id]
     );
 
-    if (req.files && req.files.length) {
-      const values = req.files.map((f) => `(${id}, '${f.filename}')`).join(",");
+    const filenames = await saveProcessedImages(req.files);
+    if (filenames.length) {
+      const values = filenames.map((name) => `(${id}, '${name}')`).join(",");
       await pool.query(`INSERT INTO item_images (item_id, filename) VALUES ${values}`);
     }
 
@@ -301,10 +341,7 @@ async function destroy(req, res) {
     }
 
     const imagesResult = await pool.query("SELECT filename FROM item_images WHERE item_id = $1", [id]);
-    imagesResult.rows.forEach((img) => {
-      const filePath = path.join(UPLOAD_DIR, img.filename);
-      fs.unlink(filePath, () => {});
-    });
+    imagesResult.rows.forEach((img) => deleteImageFile(img.filename));
 
     await pool.query("DELETE FROM items WHERE id = $1", [id]);
 
@@ -328,7 +365,7 @@ async function deleteImage(req, res) {
 
     const imageResult = await pool.query("SELECT * FROM item_images WHERE id = $1 AND item_id = $2", [imageId, id]);
     if (imageResult.rows.length) {
-      fs.unlink(path.join(UPLOAD_DIR, imageResult.rows[0].filename), () => {});
+      deleteImageFile(imageResult.rows[0].filename);
       await pool.query("DELETE FROM item_images WHERE id = $1", [imageId]);
     }
 

@@ -35,7 +35,7 @@ function toDateInput(d) {
 
     <div>
       <label class="label-field">Título</label>
-      <input type="text" name="title" required value="<%= item.title || '' %>" class="input-field" placeholder="Ej. Billetera de cuero negra" />
+      <input type="text" name="title" required maxlength="150" value="<%= item.title || '' %>" class="input-field" placeholder="Ej. Billetera de cuero negra" />
     </div>
 
     <div>
@@ -60,7 +60,8 @@ function toDateInput(d) {
       </div>
       <div>
         <label class="label-field">Fecha</label>
-        <input type="date" name="item_date" required value="<%= toDateInput(item.item_date) %>" class="input-field" />
+        <input type="date" name="item_date" required max="<%= maxDate %>" value="<%= toDateInput(item.item_date) %>" class="input-field" />
+        <p class="text-xs text-slate-400 mt-1">No puede ser una fecha futura (hora Perú).</p>
       </div>
     </div>
 
@@ -70,11 +71,13 @@ function toDateInput(d) {
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div>
         <label class="label-field">Nombre</label>
-        <input type="text" name="contact_name" value="<%= item.contact_name || '' %>" class="input-field" />
+        <input type="text" name="contact_name" maxlength="100" value="<%= item.contact_name || '' %>" class="input-field" />
       </div>
       <div>
-        <label class="label-field">Teléfono</label>
-        <input type="tel" name="contact_phone" value="<%= item.contact_phone || '' %>" class="input-field" />
+        <label class="label-field">Teléfono (solo Perú)</label>
+        <input type="tel" name="contact_phone" inputmode="numeric" maxlength="9" pattern="\d{9}"
+               data-numeric-only data-max-digits="9" placeholder="9XXXXXXXX"
+               value="<%= item.contact_phone || '' %>" class="input-field" />
       </div>
       <div>
         <label class="label-field">Correo</label>
@@ -88,7 +91,7 @@ function toDateInput(d) {
         <div class="grid grid-cols-4 gap-2">
           <% images.forEach(function(img) { %>
             <div class="relative group">
-              <img src="/uploads/<%= img.filename %>" class="w-full h-20 object-cover rounded-lg" />
+              <img src="/uploads/<%= img.filename %>" class="w-full h-28 object-cover rounded-lg" />
               <form action="/items/<%= item.id %>/images/<%= img.id %>?_method=DELETE" method="POST"
                     onsubmit="return confirm('¿Eliminar esta foto?');"
                     class="absolute top-1 right-1">
@@ -101,8 +104,9 @@ function toDateInput(d) {
     <% } %>
 
     <div>
-      <label class="label-field">Agregar fotos (máx. 4, 5MB cada una)</label>
+      <label class="label-field">Agregar fotos (máx. 4, 10MB cada una)</label>
       <input type="file" name="images" accept="image/*" multiple class="input-field" />
+      <div id="image-preview" class="grid grid-cols-4 gap-2 mt-2"></div>
     </div>
 
     <button type="submit" class="btn-primary w-full"><%= isEdit ? 'Guardar cambios' : 'Publicar' %></button>

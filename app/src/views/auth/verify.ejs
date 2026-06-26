@@ -1,0 +1,18 @@
+<div class="max-w-md mx-auto card p-8 mt-6 text-center">
+  <h1 class="text-2xl font-bold text-brand-800 mb-1">Verifica tu correo</h1>
+  <p class="text-slate-500 text-sm mb-6">
+    Enviamos un código de 6 dígitos a <strong><%= email %></strong>. Ingrésalo para activar tu cuenta.
+  </p>
+
+  <form action="/auth/verify" method="POST" class="space-y-4">
+    <input type="text" name="code" inputmode="numeric" maxlength="6" required
+           data-numeric-only data-max-digits="6"
+           placeholder="000000"
+           class="input-field text-center text-2xl tracking-[0.5em] font-semibold" />
+    <button type="submit" class="btn-primary w-full">Verificar cuenta</button>
+  </form>
+
+  <form action="/auth/verify/resend" method="POST" class="mt-4">
+    <button type="submit" class="text-sm text-brand-600 hover:underline">¿No te llegó? Reenviar código</button>
+  </form>
+</div>

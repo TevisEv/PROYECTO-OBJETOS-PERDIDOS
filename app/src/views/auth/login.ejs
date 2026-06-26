@@ -17,7 +17,11 @@
     </div>
     <div>
       <label class="label-field">Contraseña</label>
-      <input type="password" name="password" required class="input-field" />
+      <div class="relative">
+        <input type="password" id="login_password" name="password" required class="input-field pr-16" />
+        <button type="button" data-toggle-password="login_password"
+                class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-brand-600 hover:underline">Mostrar</button>
+      </div>
     </div>
     <button type="submit" class="btn-primary w-full">Iniciar sesión</button>
   </form>

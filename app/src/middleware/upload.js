@@ -1,16 +1,10 @@
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const crypto = require("crypto");
+const sharp = require("sharp");
 
 const UPLOAD_DIR = path.join(__dirname, "..", "..", "uploads");
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) => {
-    const unique = crypto.randomUUID();
-    cb(null, `${unique}${path.extname(file.originalname).toLowerCase()}`);
-  }
-});
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
@@ -22,12 +16,38 @@ function fileFilter(req, file, cb) {
 }
 
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB por imagen
+    fileSize: 10 * 1024 * 1024, // 10MB por imagen (se comprime después)
     files: 4
   }
 });
 
-module.exports = { upload, UPLOAD_DIR };
+// Normaliza cada imagen subida: corrige orientación, limita el ancho máximo
+// y la comprime, para que todas se vean nítidas y con un peso consistente
+// sin importar el tamaño original del archivo.
+async function saveProcessedImages(files) {
+  if (!files || !files.length) return [];
+
+  const filenames = [];
+  for (const file of files) {
+    const filename = `${crypto.randomUUID()}.jpg`;
+    const outputPath = path.join(UPLOAD_DIR, filename);
+
+    await sharp(file.buffer)
+      .rotate()
+      .resize({ width: 1600, withoutEnlargement: true })
+      .jpeg({ quality: 82 })
+      .toFile(outputPath);
+
+    filenames.push(filename);
+  }
+  return filenames;
+}
+
+function deleteImageFile(filename) {
+  fs.unlink(path.join(UPLOAD_DIR, filename), () => {});
+}
+
+module.exports = { upload, UPLOAD_DIR, saveProcessedImages, deleteImageFile };

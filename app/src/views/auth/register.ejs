@@ -13,23 +13,38 @@
   <form action="/auth/register" method="POST" class="space-y-4">
     <div>
       <label class="label-field">Nombre completo</label>
-      <input type="text" name="name" required value="<%= values.name || '' %>" class="input-field" />
+      <input type="text" name="name" required maxlength="100" value="<%= values.name || '' %>" class="input-field" />
     </div>
     <div>
       <label class="label-field">Correo electrónico</label>
       <input type="email" name="email" required value="<%= values.email || '' %>" class="input-field" />
     </div>
     <div>
-      <label class="label-field">Teléfono (opcional)</label>
-      <input type="tel" name="phone" value="<%= values.phone || '' %>" class="input-field" />
+      <label class="label-field">Teléfono (opcional, solo Perú)</label>
+      <input type="tel" name="phone" inputmode="numeric" maxlength="9" pattern="\d{9}"
+             data-numeric-only data-max-digits="9"
+             placeholder="9XXXXXXXX" value="<%= values.phone || '' %>" class="input-field" />
     </div>
     <div>
       <label class="label-field">Contraseña</label>
-      <input type="password" name="password" required minlength="6" class="input-field" />
+      <div class="relative">
+        <input type="password" id="password" name="password" required minlength="8"
+               pattern="(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9\s]).{8,}"
+               title="Mínimo 8 caracteres, incluye letras, números y un carácter especial"
+               class="input-field pr-16" />
+        <button type="button" data-toggle-password="password"
+                class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-brand-600 hover:underline">Mostrar</button>
+      </div>
+      <p class="text-xs text-slate-400 mt-1">Mínimo 8 caracteres, incluye letras, números y un carácter especial (ej. !@#$%).</p>
     </div>
     <div>
       <label class="label-field">Confirmar contraseña</label>
-      <input type="password" name="confirm_password" required minlength="6" class="input-field" />
+      <div class="relative">
+        <input type="password" id="confirm_password" name="confirm_password" required minlength="8"
+               class="input-field pr-16" />
+        <button type="button" data-toggle-password="confirm_password"
+                class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-brand-600 hover:underline">Mostrar</button>
+      </div>
     </div>
     <button type="submit" class="btn-primary w-full">Crear cuenta</button>
   </form>
